@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Vets{% endblock %}
+
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div style="margin-top: 20px;">
+      {% for category, message in messages %}
+        <div 
+          style="
+            position: relative;
+            padding: 12px 40px 12px 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-weight: 500;
+            color: white;
+            background-color: {% if category == 'success' %}#28a745
+                             {% elif category == 'danger' %}#dc3545
+                             {% elif category == 'warning' %}#ffc107; color: black;
+                             {% else %}#17a2b8{% endif %};
+          "
+          class="flash-message"
+        >
+          {{ message }}
+          <button 
+            onclick="this.parentElement.style.display='none';" 
+            style="
+              position: absolute;
+              top: 50%;
+              right: 12px;
+              transform: translateY(-50%);
+              background: transparent;
+              border: none;
+              color: inherit;
+              font-weight: bold;
+              font-size: 20px;
+              line-height: 1;
+              cursor: pointer;
+              padding: 0;
+              user-select: none;
+            "
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<h2 style="color:#D2601A; margin-bottom:20px;">Vet Management</h2>
+
+<table style="width:100%; border-collapse: collapse; font-family: 'Inter', sans-serif; border-radius: 5px;">
+  <thead>
+    <tr style="background-color: #FFD7B5; color:#5A3E2B; text-align:left;">
+      <th style="padding: 12px 15px;">Name</th>
+      <th>Email</th>
+      <th>Phone</th>
+      <th>Specialization</th>
+      <th>Status</th>
+      <th style="text-align:center;">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for vet in vets %}
+    <tr style="border-bottom: 1px solid #f89f1a; background-color:#fcf4ef">
+      <td style="padding: 12px 15px;">{{ vet.name }}</td>
+      <td>{{ vet.email }}</td>
+      <td>{{ vet.phone }}</td>
+      <td>{{ vet.specialization }}</td>
+      <td style="font-weight: 600; color: {% if vet.status == 'active' %}green{% else %}#d2601a{% endif %};">
+        {{ vet.status|capitalize }}
+      </td>
+      <td style="text-align:center; padding:10px;">
+        <form action="{{ url_for('approve_vet', vet_id=vet._id) }}" method="post" style="display:inline;">
+          <button type="submit" style="background:#D2601A; border:none; color:#fff; padding:6px 14px; border-radius:6px; cursor:pointer; margin-right:8px;">
+            Approve
+          </button>
+        </form>
+        <form action="{{ url_for('reject_vet', vet_id=vet._id) }}" method="post" style="display:inline;">
+          <button type="submit" style="background:#FF6F59; border:none; color:#fff; padding:6px 14px; border-radius:6px; cursor:pointer;">
+            Reject
+          </button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <td colspan="6" style="padding: 20px; text-align: center;">No vets found.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

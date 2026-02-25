@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Appointment Details{% endblock %}
+
+{% block content %}
+<style>
+  .container {
+    max-width: 700px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+  }
+
+  label {
+    font-weight: 600;
+    display: block;
+    margin-top: 15px;
+  }
+
+  input[type="text"],
+  input[type="date"],
+  textarea {
+    width: 100%;
+    padding: 8px 10px;
+    margin-top: 5px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    resize: vertical;
+  }
+
+  button {
+    margin-top: 25px;
+    background-color: #D2601A;
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  button:hover {
+    background-color: #b44e10;
+  }
+
+  .readonly-field {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 5px;
+  }
+</style>
+
+
+  <h2>Appointment Details</h2>
+
+  <p><strong>Date:</strong> {{ appointment.date }}</p>
+  <p><strong>Time:</strong> {{ appointment.time }}</p>
+  <p><strong>Reason:</strong> {{ appointment.reason }}</p>
+
+  <h3>Pet Info</h3>
+  <p><strong>Name:</strong> {{ pet.name }}</p>
+  <p><strong>Species:</strong> {{ pet.species }}</p>
+  <p><strong>Breed:</strong> {{ pet.breed if pet.breed else 'N/A' }}</p>
+
+  <h3>Customer Info</h3>
+  <p><strong>Name:</strong> {{ customer.name }}</p>
+  <p><strong>Email:</strong> {{ customer.email }}</p>
+
+  <h3>Treatment</h3>
+  <form method="POST" >
+    <label for="prescription">Prescription</label>
+    <textarea id="prescription" name="prescription" rows="3">{{ treatment.prescription if treatment else '' }}</textarea>
+
+    <label for="next_date">Next Appointment Date</label>
+    <input type="date" id="next_date" name="next_date" value="{{ treatment.next_date if treatment and treatment.next_date else '' }}" />
+
+    <label for="notes">Notes</label>
+    <textarea id="notes" name="notes" rows="4">{{ treatment.notes if treatment else '' }}</textarea>
+
+    <label for="amount">Amount</label>
+    <input type="text" id="amount" name="amount" value="{{ treatment.amount if treatment else '' }}" />
+
+    <button type="submit" {% if appointment.status == 'Paid' %}disabled style="background-color: grey; cursor: not-allowed;"{% endif %}>
+        Save Treatment
+    </button>
+  </form>
+
+  <br />
+  <a href="{{ url_for('vet_appointments') }}" style="color:#D2601A;">Back to Appointments</a>
+{% endblock %}

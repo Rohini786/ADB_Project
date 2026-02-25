@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}Create Pet{% endblock %}
+
+{% block content %}
+<style>
+  .form-card {
+    max-width: 500px;
+    background: white;
+    border-radius: 16px;
+    padding: 30px 40px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin: 60px auto;
+    animation: fadeInUp 0.6s ease;
+  }
+
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .form-card h2 {
+    text-align: center;
+    color: #D2601A;
+    margin-bottom: 30px;
+    font-size: 24px;
+  }
+
+  .form-card label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .form-card input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    transition: border 0.3s;
+  }
+
+  .form-card input[type="text"]:focus {
+    border-color: #D2601A;
+    outline: none;
+  }
+
+  .form-card button {
+    background-color: #D2601A;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s;
+  }
+
+  .form-card button:hover {
+    background-color: #b04f14;
+  }
+
+  .breed-input-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.breed-input-container input[type="text"] {
+  flex: 1;
+  margin-bottom: 0;
+  padding: 10px;
+  width: 40%;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.breed-input-container button {
+  padding: 8px 16px;
+  font-size: 14px;
+  height: auto;
+  min-height: 40px;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #D2601A;
+  color: white;
+  border: none;
+  transition: background-color 0.3s;
+  width:10%
+}
+
+.breed-input-container button:hover {
+  background-color: #b04f14;
+}
+
+  #breedList {
+    min-height: 36px;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: #f9f9f9;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .breed-pill {
+    background-color: #D2601A;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .breed-pill button {
+    margin-left: 8px;
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1;
+  }
+</style>
+
+<div class="form-card">
+  <h2>Create Pet</h2>
+  <form action="{{ url_for('create_pet') }}" method="POST" id="petForm">
+    <label for="pet_name">Pet Name</label>
+    <input
+      type="text"
+      id="pet_name"
+      name="pet_name"
+      required
+      placeholder="Enter pet name"
+    />
+
+    <label for="breedInput">Breed</label>
+    <div class="breed-input-container">
+      <input
+        type="text"
+        id="breedInput"
+        placeholder="Enter breed"
+        autocomplete="off"
+      />
+      <button type="button" id="addBreedBtn">Add</button>
+    </div>
+    <div id="breedList" aria-live="polite" aria-label="List of added breeds">
+      <!-- Breed pills will appear here -->
+    </div>
+
+    <!-- Hidden input to store all breeds as comma-separated -->
+    <input type="hidden" name="breed" id="breedHidden" required />
+
+    <button type="submit">Create Pet</button>
+  </form>
+</div>
+
+<script>
+  const breedInput = document.getElementById('breedInput');
+  const addBreedBtn = document.getElementById('addBreedBtn');
+  const breedList = document.getElementById('breedList');
+  const breedHidden = document.getElementById('breedHidden');
+
+  let breeds = [];
+
+  function updateBreedHidden() {
+    breedHidden.value = breeds.join(',');
+  }
+
+  function renderBreedList() {
+    breedList.innerHTML = '';
+    breeds.forEach((breed, index) => {
+      const pill = document.createElement('span');
+      pill.className = 'breed-pill';
+      pill.textContent = breed;
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.setAttribute('aria-label', `Remove breed ${breed}`);
+      removeBtn.textContent = '×';
+      removeBtn.onclick = () => {
+        breeds.splice(index, 1);
+        renderBreedList();
+        updateBreedHidden();
+      };
+
+      pill.appendChild(removeBtn);
+      breedList.appendChild(pill);
+    });
+
+    // If no breeds added, mark hidden input invalid for required
+    breedHidden.required = breeds.length === 0;
+  }
+
+  addBreedBtn.addEventListener('click', () => {
+    const val = breedInput.value.trim();
+    if (val && !breeds.includes(val)) {
+      breeds.push(val);
+      breedInput.value = '';
+      renderBreedList();
+      updateBreedHidden();
+      breedInput.focus();
+    }
+  });
+
+  breedInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addBreedBtn.click();
+    }
+  });
+
+  // On page load, ensure breedHidden required is correct
+  updateBreedHidden();
+  renderBreedList();
+</script>
+{% endblock %}

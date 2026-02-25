@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Dashboard{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #fff4e6;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+h2{
+margin-left: 35%;
+}
+
+  .dashboard {
+    max-width: 1000px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+    padding: 40px;
+  }
+
+  .card {
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    padding: 30px 20px;
+    text-align: center;
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-icon {
+    color: #e76f51;
+    margin-bottom: 15px;
+  }
+
+  .card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  a {
+    text-decoration: none;
+  }
+</style>
+<h2>Manage Appointments</h2>
+<div class="dashboard">
+
+  <a href="/open_slots">
+    <div class="card">
+      <div class="card-icon"><i data-lucide="plus-circle" width="36" height="36"></i></div>
+      <div class="card-title">Create Appointment</div>
+    </div>
+  </a>
+
+  <a href="/edit_appointment">
+    <div class="card">
+      <div class="card-icon">
+        <i data-lucide="edit-3" width="36" height="36"></i>
+      </div>
+      <div class="card-title">Edit Appointment</div>
+    </div>
+  </a>
+  
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  lucide.createIcons();
+</script>
+{% endblock %}

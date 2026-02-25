@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Dashboard{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #fff4e6;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .dashboard {
+    max-width: 1000px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+    padding: 40px;
+  }
+
+  .card {
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    padding: 30px 20px;
+    text-align: center;
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-icon {
+    color: #e76f51;
+    margin-bottom: 15px;
+  }
+
+  .card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  a {
+    text-decoration: none;
+  }
+</style>
+
+<div class="dashboard">
+  <a href="/create_pet">
+    <div class="card">
+      <div class="card-icon"><i data-lucide="dog" width="36" height="36"></i></div>
+      <div class="card-title">Create Pet</div>
+    </div>
+  </a>
+  <a href="/admin_assign_appointments">
+    <div class="card">
+      <div class="card-icon"><i data-lucide="calendar-clock" width="36" height="36"></i></div>
+      <div class="card-title">Appointments</div>
+    </div>
+  </a>
+  <a href="/vets_review">
+    <div class="card">
+      <div class="card-icon"><i data-lucide="stethoscope" width="36" height="36"></i></div>
+      <div class="card-title">Vets</div>
+    </div>
+  </a>
+  <a href="/admin_payments">
+    <div class="card">
+      <div class="card-icon"><i data-lucide="credit-card" width="36" height="36"></i></div>
+      <div class="card-title">Payments</div>
+    </div>
+  </a>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  lucide.createIcons();
+</script>
+{% endblock %}

@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Appointment Ticket{% endblock %}
+
+{% block content %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap');
+
+  .ticket {
+    max-width: 500px;
+    margin: 40px auto;
+    background: #fff9f2;
+    border: 2px dashed #D2601A;
+    border-radius: 15px;
+    padding: 30px 35px;
+    font-family: 'Courier Prime', monospace;
+    box-shadow: 0 6px 15px rgba(210, 96, 26, 0.25);
+    color: #4a3c31;
+    position: relative;
+  }
+
+  .ticket h2 {
+    text-align: center;
+    color: #D2601A;
+    font-weight: 700;
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+  }
+
+  .section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 18px;
+    gap: 12px;
+  }
+
+  .section-icon {
+    flex-shrink: 0;
+    color: #D2601A;
+    width: 24px;
+    height: 24px;
+  }
+
+  .section-label {
+    font-weight: 700;
+    min-width: 110px;
+  }
+
+  .section-value {
+    flex: 1;
+    background: #fff;
+    border: 1px solid #D2601A;
+    border-radius: 6px;
+    padding: 6px 12px;
+    color: #4a3c31;
+    user-select: text;
+  }
+
+  .ticket-footer {
+    margin-top: 30px;
+    text-align: center;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 10px 22px;
+    background-color: #D2601A;
+    color: white;
+    font-weight: 700;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+  }
+
+  .btn:hover {
+    background-color: #b44e10;
+  }
+
+  .back-link {
+    margin-top: 15px;
+    display: inline-block;
+    color: #D2601A;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<div class="ticket">
+  <h2>Appointment Ticket</h2>
+
+  <div class="section">
+    <i data-lucide="calendar" class="section-icon"></i>
+    <div class="section-label">Date</div>
+    <div class="section-value">{{ appointment.date }}</div>
+  </div>
+
+  <div class="section">
+    <i data-lucide="clock" class="section-icon"></i>
+    <div class="section-label">Time</div>
+    <div class="section-value">{{ appointment.time }}</div>
+  </div>
+
+  <div class="section">
+    <i data-lucide="alert-circle" class="section-icon"></i>
+    <div class="section-label">Reason</div>
+    <div class="section-value">{{ appointment.reason }}</div>
+  </div>
+
+  <div class="section">
+    <i data-lucide="paw" class="section-icon"></i>
+    <div class="section-label">Pet Name</div>
+    <div class="section-value">{{ appointment.pet_name }}</div>
+  </div>
+
+  <div class="section">
+    <i data-lucide="hash" class="section-icon"></i>
+    <div class="section-label">Pet Age</div>
+    <div class="section-value">{{ appointment.pet_age }}</div>
+  </div>
+
+  <div class="section">
+    <i data-lucide="user" class="section-icon"></i>
+    <div class="section-label">Doctor</div>
+    <div class="section-value">{{ appointment.vet if appointment.vet else 'TBA' }}</div>
+  </div>
+
+
+
+  <div class="section">
+    <i data-lucide="credit-card" class="section-icon"></i>
+    <div class="section-label">Amount</div>
+    <div class="section-value">{{ appointment.amount if appointment.amount else 'TBA' }}</div>
+  </div>
+  <a href="{{ url_for('view_report', appointment_id=appointment['_id']) }}">Check Report</a>
+
+
+  <div class="ticket-footer">
+    <a href="{{ url_for('cust_appointments') }}" class="back-link">← Back to Appointments</a>
+
+    {% if  appointment.status == 'diagnosed' %}
+      <br /><br />
+      <a href="{{ url_for('make_payment', appointment_id=appointment._id) }}" class="btn">Create Payment</a>
+      {% endif %}
+  </div>
+</div>
+
+<script>
+  lucide.createIcons()
+</script>
+{% endblock %}

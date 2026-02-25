@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block title %}Assign Appointments{% endblock %}
+
+{% block content %}
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  th, td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+
+  th {
+    background-color: #D2601A;
+    color: white;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+  form {
+    margin: 0;
+  }
+
+  select {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  button {
+    background-color: #D2601A;
+    border: none;
+    color: white;
+    padding: 7px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-left: 5px;
+    transition: background-color 0.3s;
+  }
+
+  button:hover {
+    background-color: #b44e10;
+  }
+</style>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div style="margin-top: 20px;">
+      {% for category, message in messages %}
+        <div 
+          style="
+            position: relative;
+            padding: 12px 40px 12px 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-weight: 500;
+            color: white;
+            background-color: {% if category == 'success' %}#28a745
+                             {% elif category == 'danger' %}#dc3545
+                             {% elif category == 'warning' %}#ffc107; color: black;
+                             {% else %}#17a2b8{% endif %};
+          "
+          class="flash-message"
+        >
+          {{ message }}
+          <button 
+            onclick="this.parentElement.style.display='none';" 
+            style="
+              position: absolute;
+              top: 50%;
+              right: 12px;
+              transform: translateY(-50%);
+              background: transparent;
+              border: none;
+              color: inherit;
+              font-weight: bold;
+              font-size: 20px;
+              line-height: 1;
+              cursor: pointer;
+              padding: 0;
+              user-select: none;
+            "
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+
+<h2>Requested Appointments</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Reason</th>
+      <th>Pet Name</th>
+      <th>Vet</th>
+      <th>Available Vets</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for a in appointments %}
+      <tr>
+        <td>{{ a.date }}</td>
+        <td>{{ a.time }}</td>
+        <td>{{ a.reason }}</td>
+        <td>{{ a.pet_name }}</td>
+        <td>{{ a.vet }}</td>
+        <td>
+            <form action="{{ url_for('assign_appointment', appointment_id=a._id) }}" method="POST">
+              <select name="vet_name" required>
+                <option value="">Select Vet</option>
+                {% for vet_name in a.available_vets %}
+                  <option value="{{ vet_name }}">{{ vet_name}} - {{a.date}} | {{a.time }}</option>
+                {% endfor %}
+              </select>
+            
+              </td>
+              <td>
+                <button type="submit"
+                  {% if a.status not in ['assigned', 'requested'] %}
+                    disabled 
+                    style="background-color: grey; cursor: not-allowed;" 
+                    title="Can only assign when status is 'Assigned' or 'Requested'"
+                  {% endif %}>
+                  Assign
+                </button>
+              </form>
+          <form action="{{ url_for('delete_appointment', appointment_id=a._id) }}" method="POST" style="display:inline;">
+            <button type="submit" onclick="return confirm('Are you sure you want to delete this appointment?')">Delete</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr>
+        <td colspan="6" style="text-align:center;">No requested appointments found.</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

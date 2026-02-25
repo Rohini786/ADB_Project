@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Create Pet{% endblock %}
+
+{% block content %}
+<style>
+  form {
+    max-width: 600px;
+    margin: auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+  label {
+    display: block;
+    margin-top: 16px;
+    font-weight: bold;
+  }
+  input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+  button {
+    margin-top: 24px;
+    background-color: #e76f51;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  button:hover {
+    background-color: #d35400;
+  }
+</style>
+
+<form action="/cust_create_pet" method="POST">
+  <h2>Create Pet</h2>
+
+  <label for="name">Pet Name</label>
+  <input type="text" name="name" required>
+
+  <label for="type">Type</label>
+  <select name="type" id="pet-type" required>
+    <option value="">Select Type</option>
+    {% for pet in pet_types %}
+      <option value="{{ pet.name}}">{{ pet.name}}</option>
+    {% endfor %}
+  </select>
+
+  <label for="breed">Breed</label>
+  <select name="breed" id="breed-dropdown" required>
+    <option value="">Select Breed</option>
+  </select>
+
+  <label for="gender">Gender</label>
+  <select name="gender" required>
+    <option value="">Select Gender</option>
+    <option>Male</option>
+    <option>Female</option>
+  </select>
+
+  <label for="monthYearPicker">Select Month and Year:</label>
+  <input type="month" id="dob" name="dob">
+
+
+  <label for="allergies">Allergies</label>
+  <textarea name="allergies"></textarea>
+
+  <button type="submit">Create Pet</button>
+</form>
+
+<script>
+  document.getElementById("pet-type").addEventListener("change", function() {
+    const type = this.value;
+    fetch(`/get_breeds/${type}`)
+      .then(response => response.json())
+      .then(data => {
+        const breedDropdown = document.getElementById("breed-dropdown");
+        breedDropdown.innerHTML = `<option value="">Select Breed</option>`;
+        data.breeds.forEach(breed => {
+          const opt = document.createElement("option");
+          opt.value = breed;
+          opt.textContent = breed;
+          breedDropdown.appendChild(opt);
+        });
+      });
+  });
+</script>
+{% endblock %}

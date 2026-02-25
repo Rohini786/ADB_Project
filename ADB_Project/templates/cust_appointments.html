@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}My Appointments{% endblock %}
+
+{% block content %}
+<style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+  
+    th, td {
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+  
+    th {
+      background-color: #D2601A;
+      color: white;
+    }
+  
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+  
+    a.view-btn {
+      color: #D2601A;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    a.view-btn:hover {
+      text-decoration: underline;
+    }
+    .view-btn.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: default;
+  text-decoration: none;
+}
+  </style>
+
+
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div style="margin-top: 20px;">
+      {% for category, message in messages %}
+        <div 
+          style="
+            position: relative;
+            padding: 12px 40px 12px 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-weight: 500;
+            color: white;
+            background-color: {% if category == 'success' %}#28a745
+                             {% elif category == 'danger' %}#dc3545
+                             {% elif category == 'warning' %}#ffc107; color: black;
+                             {% else %}#17a2b8{% endif %};
+          "
+          class="flash-message"
+        >
+          {{ message }}
+          <button 
+            onclick="this.parentElement.style.display='none';" 
+            style="
+              position: absolute;
+              top: 50%;
+              right: 12px;
+              transform: translateY(-50%);
+              background: transparent;
+              border: none;
+              color: inherit;
+              font-weight: bold;
+              font-size: 20px;
+              line-height: 1;
+              cursor: pointer;
+              padding: 0;
+              user-select: none;
+            "
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+<div style="max-width: 900px; margin: 40px auto;">
+  <h2 style="color: #D2601A; text-align: center; margin-bottom: 30px;">My Appointments</h2>
+
+ {% if not appointments %}
+      <p style="text-align: center;">No appointments found.</p>
+  {% else %}
+    <table>
+      <thead>
+        <tr >
+
+          <th style="padding: 10px;">Date</th>
+          <th style="padding: 10px;">Time</th>
+          <th style="padding: 10px;">Reason</th>
+          <th style="padding: 10px;">Pet Name</th>
+          <th style="padding: 10px;">Age</th>
+          <th style="padding: 10px;">Status</th>
+          <th style="padding: 10px;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in appointments %}
+        <tr>
+            <td>{{ a['date'] }}</td>
+            <td>{{ a['time'] }}</td>
+            <td>{{ a['reason'] }}</td>
+            <td>{{ a['pet_name'] }}</td>
+            <td>{{ a['pet_age'] }}</td>
+            <td>{{ a['status'] }}</td>
+            <td>
+              {% if a.status == "cancelled" %}
+              <div class="tooltip-wrapper">
+                <a class="view-btn disabled">View</a>
+            </div>
+          {% else %}
+              <a href="{{ url_for('view_appointment', appointment_id=a._id) }}" class="view-btn">View</a>
+          {% endif %}
+              
+                {% if a.status == 'requested' or a.status == 'assigned' %}
+                  <form action="{{ url_for('cancel_appointment', appointment_id=a._id) }}" method="POST" style="display:inline;">
+                    <button type="submit" style="
+                        margin-left: 10px;
+                        background-color: #dc3545;
+                        color: white;
+                        border: none;
+                        padding: 6px 10px;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        font-weight: 600;
+                    ">Cancel</button>
+                  </form>
+                {% endif %}
+              </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</div>
+{% endblock %}

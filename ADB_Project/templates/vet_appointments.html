@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Vet Appointments{% endblock %}
+
+{% block content %}
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  th, td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+
+  th {
+    background-color: #D2601A;
+    color: white;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+  a.view-btn {
+    color: #D2601A;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  a.view-btn:hover {
+    text-decoration: underline;
+  }
+</style>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div style="margin-top: 20px;">
+      {% for category, message in messages %}
+        <div 
+          style="
+            position: relative;
+            padding: 12px 40px 12px 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-weight: 500;
+            color: white;
+            background-color: {% if category == 'success' %}#28a745
+                             {% elif category == 'danger' %}#dc3545
+                             {% elif category == 'warning' %}#ffc107; color: black;
+                             {% else %}#17a2b8{% endif %};
+          "
+          class="flash-message"
+        >
+          {{ message }}
+          <button 
+            onclick="this.parentElement.style.display='none';" 
+            style="
+              position: absolute;
+              top: 50%;
+              right: 12px;
+              transform: translateY(-50%);
+              background: transparent;
+              border: none;
+              color: inherit;
+              font-weight: bold;
+              font-size: 20px;
+              line-height: 1;
+              cursor: pointer;
+              padding: 0;
+              user-select: none;
+            "
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<h2>My Assigned Appointments</h2>
+
+{% if appointments %}
+<table>
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Pet Name</th>
+      <th>Reason</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for a in appointments %}
+    <tr>
+      <td>{{ a.date }}</td>
+      <td>{{ a.time }}</td>
+      <td>{{ a.pet_name }}</td>
+      <td>{{ a.reason }}</td>
+      <td>{{ a.status }}</td>
+      <td><a href="{{ url_for('vet_view_appointment', appointment_id=a._id) }}" class="view-btn">View</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+  <p>No appointments assigned to you.</p>
+{% endif %}
+
+{% endblock %}

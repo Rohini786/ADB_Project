@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Create Appointment{% endblock %}
+
+{% block content %}
+<style>
+  .card {
+    max-width: 500px;
+    margin: 60px auto;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    background-color: #fff;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .form-label {
+    font-weight: 600;
+    margin-top: 15px;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+  }
+
+  .form-button {
+    background-color: #D2601A;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-weight: 600;
+    margin-top: 25px;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  .form-button:hover {
+    background-color: #b04f14;
+  }
+</style>
+
+<div class="card">
+  <h2 style="color:#D2601A; margin-bottom: 20px;">Create Appointment</h2>
+
+  <form action="{{ url_for('create_appointment') }}" method="POST">
+    <!-- Date -->
+    <select name="vet_name" class="form-input" required>
+      <option value="">Select Vet</option>
+      {% for v in vets %}
+        <option value="{{ v.name }}">{{ v.name}}</option>
+      {% endfor %}
+    </select>
+    <!-- Pet dropdown -->
+    <label class="form-label" for="pet_id">Select Pet</label>
+    <select id="pet_id" name="pet_id" class="form-input" required>
+      {% for pet in customer_pets %}
+        <option value="{{ pet['_id'] }}">{{ pet['name'] }} ({{ pet['type'] }})</option>
+      {% endfor %}
+    </select>
+    <label class="form-label" for="date">Select Date</label>
+    <input type="date" id="date" name="date" class="form-input" required />
+
+    <label class="form-label" for="time">Select Time</label>
+<select id="time" name="time" class="form-input" required></select>
+    <!-- Reason -->
+    <label class="form-label" for="reason">Reason for Appointment</label>
+    <textarea id="reason" name="reason" class="form-input" rows="3" placeholder="Describe the issue or reason..." required></textarea>
+
+    <!-- Submit -->
+    <button type="submit" class="form-button">Book Appointment</button>
+  </form>
+</div>
+
+
+<script>
+  function generateTimeSlots(startHour, endHour) {
+      const slots = [];
+      for (let hour = startHour; hour < endHour; hour++) {
+          for (let minutes of [0, 30]) {
+              const date = new Date();
+              date.setHours(hour);
+              date.setMinutes(minutes);
+              const timeString = date.toLocaleTimeString('en-US', {
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true
+              });
+              slots.push(timeString);
+          }
+      }
+      return slots;
+  }
+
+  const timeSelect = document.getElementById('time');
+  const morningSlots = generateTimeSlots(8, 13);  // 8:00 AM – 12:30 PM
+  const afternoonSlots = generateTimeSlots(14, 17); // 2:00 PM – 4:30 PM
+
+  const allSlots = [...morningSlots, ...afternoonSlots];
+
+  allSlots.forEach(time => {
+      const option = document.createElement('option');
+      option.value = time;
+      option.textContent = time;
+      timeSelect.appendChild(option);
+  });
+</script>
+{% endblock %}

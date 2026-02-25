@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Appointment{% endblock %}
+
+{% block content %}
+<style>
+  .card {
+    max-width: 500px;
+    margin: 60px auto;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    background-color: #fff;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .form-label {
+    font-weight: 600;
+    margin-top: 15px;
+    display: block;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+
+  .form-button {
+    background-color: #D2601A;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-weight: 600;
+    margin-top: 25px;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  .form-button:hover {
+    background-color: #b04f14;
+  }
+</style>
+
+<div class="card">
+  <h2 style="color:#D2601A; margin-bottom: 20px;">Edit Appointment Slots</h2>
+
+  <form method="POST" action="{{ url_for('edit_appointment') }}">
+    <label class="form-label" for="date">Select Date</label>
+    <input type="date" id="date" name="date" class="form-input" required />
+
+    <label class="form-label" for="times">Select New/Updated Time Slots</label>
+    <select id="times" name="times" class="form-input" multiple size="10" required>
+      <!-- JS will populate -->
+    </select>
+
+    <button type="submit" class="form-button">Update Appointments</button>
+  </form>
+</div>
+
+<script>
+  const dateInput = document.getElementById('date');
+  const selectElement = document.getElementById('times');
+  const today = new Date().toISOString().split('T')[0];
+  dateInput.setAttribute('min', today);
+
+  const slots = generateTimeSlots(8, 13).concat(generateTimeSlots(14, 17));
+
+  // ✅ FIXED: Populate dropdown while preserving selections
+  function populateDropdown() {
+    const previouslySelected = Array.from(selectElement.selectedOptions).map(opt => opt.value);
+    const fragment = document.createDocumentFragment();
+
+    slots.forEach(time => {
+      const option = document.createElement('option');
+      option.value = time;
+      option.text = time;
+      if (previouslySelected.includes(time)) {
+        option.selected = true;
+      }
+      fragment.appendChild(option);
+    });
+
+    // Replaces all children without triggering selection loss
+    selectElement.replaceChildren(fragment);
+  }
+
+  function generateTimeSlots(startHour, endHour) {
+    const slots = [];
+    for (let hour = startHour; hour < endHour; hour++) {
+      slots.push(formatTime(hour, 0));
+      slots.push(formatTime(hour, 30));
+    }
+    return slots;
+  }
+
+  function formatTime(hour24, minute) {
+    const ampm = hour24 >= 12 ? 'PM' : 'AM';
+    let hour12 = hour24 % 12;
+    hour12 = hour12 === 0 ? 12 : hour12;
+    const minStr = minute === 0 ? '00' : '30';
+    return `${hour12}:${minStr} ${ampm}`;
+  }
+
+  // ✅ FIXED: Retain previous + fetched selections
+  dateInput.addEventListener('change', async () => {
+    const date = dateInput.value;
+
+    // Step 1: Get current selected times
+    const previouslySelected = Array.from(selectElement.selectedOptions).map(opt => opt.value);
+
+    try {
+      // Step 2: Fetch sessions for the selected date
+      const res = await fetch(`/get_sessions/${date}`);
+      if (!res.ok) throw new Error("Failed to fetch");
+
+      const sessionStatus = await res.json(); // { "8:00 AM": 1, "8:30 AM": 0, ... }
+      selectElement.innerHTML = '';
+      // Step 3: Merge selected values from old + new date
+      const newSelected = Object.keys(sessionStatus);
+      const allSelected = new Set([ ...newSelected]);
+
+      // Step 4: Build dropdown safely with merged selection
+      const fragment = document.createDocumentFragment();
+      slots.forEach(time => {
+        const option = document.createElement('option');
+        option.value = time;
+        option.text = time;
+        if (allSelected.has(time)) {
+          option.selected = true;
+        }
+        fragment.appendChild(option);
+      });
+
+      selectElement.replaceChildren(fragment);
+
+    } catch (err) {
+      console.error("Error:", err);
+    }
+  });
+
+  // Initial load of dropdown on page load
+  window.addEventListener('DOMContentLoaded', populateDropdown);
+</script>
+
+{% endblock %}

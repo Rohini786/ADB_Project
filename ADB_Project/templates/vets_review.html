@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Vet Approval Panel{% endblock %}
+
+{% block content %}
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  th, td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+
+  th {
+    background-color: #D2601A;
+    color: white;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+  button.approve-btn, button.reject-btn {
+    padding: 6px 12px;
+    font-weight: bold;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button.approve-btn {
+    background-color: #28a745;
+    color: white;
+  }
+
+  button.reject-btn {
+    background-color: #dc3545;
+    color: white;
+  }
+
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+</style>
+
+<h2>Vet Approval Panel</h2>
+
+{% if vets %}
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for vet in vets %}
+    <tr>
+      <td>{{ vet.name }}</td>
+      <td>{{ vet.email }}</td>
+      <td>{{ vet.status }}</td>
+      <td>
+        <form action="{{ url_for('vet_status', vet_id=vet._id, action='approve') }}" method="POST" style="display:inline;">
+          <button type="submit" class="approve-btn" {% if vet.status == 'active' %} disabled {% endif %}>Approve</button>
+        </form>
+        <form action="{{ url_for('vet_status', vet_id=vet._id, action='reject') }}" method="POST" style="display:inline;">
+          <button type="submit" class="reject-btn" {% if vet.status == 'inactive' %} disabled {% endif %}>Reject</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+  <p>No vets found for approval.</p>
+{% endif %}
+
+{% endblock %}

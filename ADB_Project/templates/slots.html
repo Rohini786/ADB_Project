@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Create Appointment{% endblock %}
+
+{% block content %}
+<style>
+  .card {
+    max-width: 500px;
+    margin: 60px auto;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    background-color: #fff;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .form-label {
+    font-weight: 600;
+    margin-top: 15px;
+    display: block;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+
+  .form-button {
+    background-color: #D2601A;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-weight: 600;
+    margin-top: 25px;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  .form-button:hover {
+    background-color: #b04f14;
+  }
+</style>
+
+<div class="card">
+  <h2 style="color:#D2601A; margin-bottom: 20px;">Create Appointment Slots</h2>
+
+  <form method="POST" action="{{ url_for('open_slots') }}">
+    <!-- Day of Week -->
+    <label class="form-label" for="weekday">Select Day of the Week</label>
+    <select id="weekday" name="weekday" class="form-input" required>
+      <option value="" disabled selected>-- Select day --</option>
+      <option value="Monday">Monday</option>
+      <option value="Tuesday">Tuesday</option>
+      <option value="Wednesday">Wednesday</option>
+      <option value="Thursday">Thursday</option>
+      <option value="Friday">Friday</option>
+      <option value="Saturday">Saturday</option>
+      <option value="Sunday">Sunday</option>
+    </select>
+
+    <!-- Time Slots -->
+    <label class="form-label" for="times">Select Time Slots</label>
+    <select id="times" name="times[]" class="form-input" multiple size="10" required>
+      <!-- JS will populate options here -->
+    </select>
+
+    <button type="submit" class="form-button">Create Slots</button>
+  </form>
+</div>
+
+<script>
+  function generateTimeSlots(startHour, endHour) {
+    const slots = [];
+    for (let hour = startHour; hour < endHour; hour++) {
+      slots.push(formatTime(hour, 0));
+      slots.push(formatTime(hour, 30));
+    }
+    return slots;
+  }
+
+  function formatTime(hour24, minute) {
+    const ampm = hour24 >= 12 ? 'PM' : 'AM';
+    let hour12 = hour24 % 12;
+    hour12 = hour12 === 0 ? 12 : hour12;
+    const minStr = minute === 0 ? '00' : '30';
+    return `${hour12}:${minStr} ${ampm}`;
+  }
+
+  const morningSlots = generateTimeSlots(8, 13); // 8 AM to 1 PM
+  const afternoonSlots = generateTimeSlots(14, 17); // 2 PM to 5 PM
+  const allSlots = [...morningSlots, ...afternoonSlots];
+
+  const timesSelect = document.getElementById('times');
+  allSlots.forEach(time => {
+    const option = document.createElement('option');
+    option.value = time;
+    option.textContent = time;
+    timesSelect.appendChild(option);
+  });
+</script>
+{% endblock %}

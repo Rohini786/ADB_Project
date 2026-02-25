@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Dashboard{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #fff4e6;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .dashboard {
+    max-width: 1000px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+    padding: 40px;
+  }
+
+  .card {
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    padding: 30px 20px;
+    text-align: center;
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+  }
+
+  .card-icon {
+    color: #e76f51;
+    margin-bottom: 15px;
+  }
+
+  .card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  a {
+    text-decoration: none;
+  }
+</style>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div style="margin-top: 20px;">
+      {% for category, message in messages %}
+        <div 
+          style="
+            position: relative;
+            padding: 12px 40px 12px 20px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            font-weight: 500;
+            color: white;
+            background-color: {% if category == 'success' %}#28a745
+                             {% elif category == 'danger' %}#dc3545
+                             {% elif category == 'warning' %}#ffc107; color: black;
+                             {% else %}#17a2b8{% endif %};
+          "
+          class="flash-message"
+        >
+          {{ message }}
+          <button 
+            onclick="this.parentElement.style.display='none';" 
+            style="
+              position: absolute;
+              top: 50%;
+              right: 12px;
+              transform: translateY(-50%);
+              background: transparent;
+              border: none;
+              color: inherit;
+              font-weight: bold;
+              font-size: 20px;
+              line-height: 1;
+              cursor: pointer;
+              padding: 0;
+              user-select: none;
+            "
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<div class="dashboard">
+  <a href="/cust_create_pet">
+    <div class="card">
+      <div class="card-icon"><i data-lucide="dog" width="36" height="36"></i></div>
+      <div class="card-title">Create Pet</div>
+    </div>
+  </a>
+  <a href="/customer_pets">
+    <div class="card">
+      <div class="card-icon"><i data-lucide="paw-print" width="36" height="36"></i></div>
+      <div class="card-title">My Pets</div>
+    </div>
+  </a>
+  <a href="/create_appointment">
+    <div class="card">
+      <div class="card-icon"><i data-lucide="calendar-clock" width="36" height="36"></i></div>
+      <div class="card-title">Schedule</div>
+    </div>
+  </a>
+  <a href="/cust_appointments">
+    <div class="card">
+      <div class="card-icon"><i data-lucide="syringe" width="36" height="36"></i></div>
+      <div class="card-title">Treatments</div>
+    </div>
+  </a>
+  <a href="/customer_payments">
+    <div class="card">
+      <div class="card-icon"><i data-lucide="credit-card" width="36" height="36"></i></div>
+      <div class="card-title">Payments</div>
+    </div>
+  </a>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  lucide.createIcons();
+</script>
+{% endblock %}

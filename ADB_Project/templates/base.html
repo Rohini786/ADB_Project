@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}VetCare{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <script src="https://kit.fontawesome.com/a2e0e6cfd2.js" crossorigin="anonymous"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #FFF5E4;
+      color: #333;
+    }
+    nav {
+      background-color: #D2601A;
+      padding: 15px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .logo {
+      font-size: 22px;
+      font-weight: bold;
+      color: #fff;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+    }
+    .logo i {
+      margin-right: 10px;
+      font-size: 24px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 25px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .nav-links li a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 16px;
+      transition: color 0.3s;
+    }
+    .nav-links li a:hover {
+      color: #FFD7B5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 40px 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="#"><i class="fas fa-paw"></i>VetCare</a>
+    <ul class="nav-links">
+
+      {% if session.get('role') == 'Admin' %}
+      <li><a href="admin_dashboard">Home</a></li>
+        <li><a href="/admin_assign_appointments">Appointments</a></li>
+        <li><a href="/create_pet">Pets</a></li>
+        <li><a href="/admin_payments">Payments</a></li>
+
+      {% elif session.get('role') == 'Vet' %}
+        <li><a href="vet_dashboard">Home</a></li>
+
+      {% elif session.get('role') == 'Customer' %}
+      <li><a href="/customer_dashboard">Home</a></li>
+        <li><a href="/cust_appointments">Appointments</a></li>
+        <li><a href="/customer_payments">Payments</a></li>
+      {% endif %}
+
+      <li><a href="/logout">Logout</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+
+</body>
+</html>
